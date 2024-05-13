@@ -25,9 +25,11 @@ const queue = 'tasks';
   const channel = await connection.createChannel()
   await channel.assertQueue(queue)
 
+  let campaign
+
   const runCampaign = () => {
     console.log(`Running campaign for ${hostname}`)
-    const campaign = election.campaign(hostname)
+    campaign = election.campaign(hostname)
     campaign.on('elected', async () => {
       console.log('I am the leader now....😈')
       watcher
@@ -63,4 +65,13 @@ const queue = 'tasks';
 
   runCampaign()
   await observeLeader()
+
+  const shutdownSignals = ['SIGINT', 'SIGTERM', 'SIGHUP'];
+
+  shutdownSignals.forEach(signal => {
+    process.on(signal, () => {
+      console.log(`Received ${signal}, gracefully shutting down`);
+      campaign.resign()
+    });
+  });
 })()
