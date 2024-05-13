@@ -1,0 +1,22 @@
+{
+  "name": "leader-election",
+  "version": "1.0.0",
+  "description": "Leader Election",
+  "main": "src/index.js",
+  "repository": "https://github.com/navneetlal/leader-election",
+  "author": "Navneet Lal Gupta",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "start": "node --experimental-require-module src/index.js"
+  },
+  "dependencies": {
+    "amqplib": "^0.10.4",
+    "chokidar": "^3.6.0",
+    "etcd3": "^1.1.2",
+    "nanoid": "^5.0.7"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  }
+}
