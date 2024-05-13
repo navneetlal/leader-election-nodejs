@@ -1,27 +1,47 @@
 
 services:
   app:
+    profiles:
+      - app
     build:
       context: .
       dockerfile: Dockerfile
     scale: 5
-    restart: 'always'
+    restart: 'on-failure'
     environment:
       - ETCD_HOST=etcd
       - RABBITMQ_HOST=rabbitmq
       - WATCH_FOLDER=/etc/service-A/files
     volumes:
       - ./files:/etc/service-A/files
+
   etcd:
     image: bitnami/etcd:3.5.13
+    profiles:
+      - app
+      - deps
+    healthcheck:
+      test: ["CMD", "etcdctl", "endpoint", "health"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
     environment:
       - ALLOW_NONE_AUTHENTICATION=yes
       - ETCD_ADVERTISE_CLIENT_URLS=http://etcd:2379
     ports:
       - 2379:2379
       - 2380:2380
+
   rabbitmq:
     image: rabbitmq:3.13.2-management-alpine
+    profiles:
+      - app
+      - deps
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
     ports:
       - 5672:5672
       - 15672:15672
